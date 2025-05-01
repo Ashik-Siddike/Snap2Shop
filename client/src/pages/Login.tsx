@@ -1,38 +1,33 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { User, Mail, Lock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
 
-export default function Login() {
-  const [isLogin, setIsLogin] = useState(true)
-  const [isLoading, setIsLoading] = useState(false)
-  const navigate = useNavigate()
-  const { toast } = useToast()
+type Tab = 'login' | 'register'
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+export default function Login() {
+  const [activeTab, setActiveTab] = useState<Tab>('register')
+  const { toast } = useToast()
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
     setIsLoading(true)
 
-    const formData = new FormData(event.currentTarget)
-    const email = formData.get('email') as string
-    const password = formData.get('password') as string
-
     try {
-      // TODO: Implement authentication
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500))
       toast({
-        title: isLogin ? "Welcome back!" : "Account created!",
-        description: isLogin
-          ? "You have successfully logged in"
-          : "Your account has been created",
+        title: activeTab === 'login' ? "Login successful" : "Account created",
+        description: activeTab === 'login' 
+          ? "Welcome back to Snap2Shop!" 
+          : "Your account has been created successfully.",
       })
-      navigate('/')
     } catch (error) {
       toast({
         title: "Error",
-        description: isLogin
-          ? "Failed to log in. Please check your credentials."
-          : "Failed to create account. Please try again.",
+        description: "Something went wrong. Please try again.",
         variant: "destructive",
       })
     } finally {
@@ -41,71 +36,173 @@ export default function Login() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-md mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-8">
-          {isLogin ? "Welcome Back" : "Create Account"}
-        </h1>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <label
-              htmlFor="email"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Email
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-              placeholder="Enter your email"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label
-              htmlFor="password"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-              placeholder="Enter your password"
-            />
-          </div>
-
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isLoading}
-          >
-            {isLoading
-              ? "Please wait..."
-              : isLogin
-              ? "Sign In"
-              : "Create Account"}
-          </Button>
-
-          <div className="text-center text-sm">
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="container mx-auto px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-md mx-auto bg-white rounded-lg shadow-sm overflow-hidden"
+        >
+          {/* Tabs */}
+          <div className="flex">
             <button
-              type="button"
-              className="text-primary hover:underline"
-              onClick={() => setIsLogin(!isLogin)}
+              onClick={() => setActiveTab('login')}
+              className={`flex-1 py-4 text-center font-medium transition-colors ${
+                activeTab === 'login'
+                  ? 'bg-white text-gray-900'
+                  : 'bg-gray-50 text-gray-500 hover:text-gray-700'
+              }`}
             >
-              {isLogin
-                ? "Don't have an account? Sign up"
-                : "Already have an account? Sign in"}
+              Login
+            </button>
+            <button
+              onClick={() => setActiveTab('register')}
+              className={`flex-1 py-4 text-center font-medium transition-colors ${
+                activeTab === 'register'
+                  ? 'bg-white text-gray-900'
+                  : 'bg-gray-50 text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Register
             </button>
           </div>
-        </form>
+
+          <div className="p-8">
+            {/* Title */}
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold mb-2">
+                {activeTab === 'login' ? 'Welcome back' : 'Register'}
+              </h2>
+              <p className="text-gray-600">
+                {activeTab === 'login' 
+                  ? 'Sign in to your account to continue'
+                  : 'Create a new account to start using Snap2Shop'}
+              </p>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {activeTab === 'register' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Full Name
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <User className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="John Doe"
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Email
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="email"
+                    placeholder="you@example.com"
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="password"
+                    placeholder="••••••••"
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                    minLength={8}
+                  />
+                </div>
+                {activeTab === 'register' && (
+                  <p className="mt-2 text-sm text-gray-500">
+                    Password must be at least 8 characters long.
+                  </p>
+                )}
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full bg-gradient-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-500 text-white py-2 rounded-md transition-colors"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <span className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing...
+                  </span>
+                ) : activeTab === 'login' ? (
+                  'Sign In'
+                ) : (
+                  'Create Account'
+                )}
+              </Button>
+            </form>
+
+            {/* Social Login */}
+            <div className="mt-8">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">
+                    OR CONTINUE WITH
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-6 grid grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-200 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  <img
+                    className="h-5 w-5"
+                    src="https://www.svgrepo.com/show/475656/google-color.svg"
+                    alt="Google logo"
+                  />
+                  <span className="ml-2">Google</span>
+                </button>
+                <button
+                  type="button"
+                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-200 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  <img
+                    className="h-5 w-5"
+                    src="https://www.svgrepo.com/show/475647/facebook-color.svg"
+                    alt="Facebook logo"
+                  />
+                  <span className="ml-2">Facebook</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </div>
   )
