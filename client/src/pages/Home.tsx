@@ -2,15 +2,14 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Upload, Camera, Search, CheckCircle2, Building2, Bell, Menu, X, Home as HomeIcon, Heart, Settings, HelpCircle } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Upload, Camera, Search, CheckCircle2, Building2, Bell } from 'lucide-react'
 
 export default function Home() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const navigate = useNavigate()
   const { toast } = useToast()
 
@@ -50,26 +49,17 @@ export default function Home() {
     }
   }
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault()
-    if (!selectedImage) {
-      toast({
-        title: "No image selected",
-        description: "Please select an image to continue",
-        variant: "destructive",
-      })
-      return
-    }
-
-    setIsLoading(true)
+  const handleImageUpload = async () => {
     try {
+      setIsLoading(true)
+      // Simulating upload delay
       await new Promise(resolve => setTimeout(resolve, 2000))
       navigate('/results')
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to process image. Please try again.",
-        variant: "destructive",
+        variant: "destructive"
       })
     } finally {
       setIsLoading(false)
@@ -77,96 +67,18 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      {/* Navigation Bar */}
-      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-xl font-bold text-blue-600"
-            >
-              Snap2Shop
-            </motion.div>
-
-            {/* Mobile Menu Button */}
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 md:hidden focus:outline-none"
-            >
-              {isMenuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
-            </motion.button>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-6">
-              <Button variant="ghost" className="text-gray-600 hover:text-blue-600">
-                Home
-              </Button>
-              <Button variant="ghost" className="text-gray-600 hover:text-blue-600">
-                Wishlist
-              </Button>
-              <Button variant="ghost" className="text-gray-600 hover:text-blue-600">
-                Settings
-              </Button>
-              <Button variant="ghost" className="text-gray-600 hover:text-blue-600">
-                Help
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
-              className="md:hidden bg-white border-t"
-            >
-              <div className="container mx-auto px-4 py-2">
-                <motion.div
-                  className="flex flex-col space-y-1"
-                  variants={{
-                    open: {
-                      transition: { staggerChildren: 0.07, delayChildren: 0.2 }
-                    },
-                    closed: {
-                      transition: { staggerChildren: 0.05, staggerDirection: -1 }
-                    }
-                  }}
-                  initial="closed"
-                  animate="open"
-                >
-                  <MenuItem icon={<HomeIcon className="w-5 h-5" />} text="Home" />
-                  <MenuItem icon={<Heart className="w-5 h-5" />} text="Wishlist" />
-                  <MenuItem icon={<Settings className="w-5 h-5" />} text="Settings" />
-                  <MenuItem icon={<HelpCircle className="w-5 h-5" />} text="Help" />
-                </motion.div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </nav>
-
-      {/* Hero Section */}
+    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+      {/* Content Section */}
       <div className="container mx-auto px-4 py-8 md:py-12">
         <div className="flex flex-col-reverse md:flex-row gap-8 md:gap-12 items-center">
-          {/* Text Content - Now Second on Mobile */}
+          {/* Text Content */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
             className="w-full md:w-1/2 text-center md:text-left"
           >
-            <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4 leading-tight">
+            <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4 leading-tight dark:text-white transition-colors duration-300">
               <span className="md:hidden">Find Best Deals</span>
               <span className="hidden md:block">
                 Snap a product.
@@ -176,7 +88,7 @@ export default function Home() {
                 </span>
               </span>
             </h1>
-            <p className="text-gray-600 mb-6 md:mb-8 text-sm md:text-lg">
+            <p className="text-gray-600 dark:text-gray-300 mb-6 md:mb-8 text-sm md:text-lg transition-colors duration-300">
               Upload a product image and our AI will instantly compare prices
               across multiple online stores to find you the best deal.
             </p>
@@ -203,7 +115,7 @@ export default function Home() {
                   </p>
                 </motion.div>
 
-                <form onSubmit={handleSubmit} className="space-y-6 relative">
+                <form onSubmit={handleImageUpload} className="space-y-6 relative">
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -359,7 +271,7 @@ export default function Home() {
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleImageUpload} className="space-y-6">
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -563,29 +475,75 @@ export default function Home() {
   )
 }
 
-const MenuItem = ({ icon, text }: { icon: React.ReactNode; text: string }) => (
+const MenuItem = ({ 
+  icon, 
+  text, 
+  onClick,
+  isActive = false
+}: { 
+  icon: React.ReactNode
+  text: string
+  onClick: () => void
+  isActive?: boolean
+}) => (
   <motion.button
-    variants={{
-      open: {
-        y: 0,
-        opacity: 1,
-        transition: {
-          y: { stiffness: 1000, velocity: -100 }
-        }
-      },
-      closed: {
-        y: 50,
-        opacity: 0,
-        transition: {
-          y: { stiffness: 1000 }
-        }
-      }
-    }}
-    whileHover={{ scale: 1.02, backgroundColor: "rgb(243 244 246)" }}
+    whileHover={{ scale: 1.02 }}
     whileTap={{ scale: 0.98 }}
-    className="flex items-center space-x-3 w-full p-3 rounded-lg text-gray-600 hover:text-blue-600 transition-colors"
+    onClick={onClick}
+    className={`flex items-center w-full p-3 rounded-xl transition-all duration-200 ${
+      isActive 
+        ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/25' 
+        : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+    }`}
   >
-    {icon}
-    <span className="font-medium">{text}</span>
+    <span className={`${isActive ? 'text-white' : 'text-blue-500'}`}>
+      {icon}
+    </span>
+    <span className={`ml-3 font-medium text-[15px] tracking-wide ${
+      isActive ? 'text-white' : ''
+    }`}>
+      {text}
+    </span>
+    {isActive && (
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        className="ml-auto bg-white/20 rounded-full p-1"
+      >
+        <CheckCircle2 className="w-4 h-4 text-white" />
+      </motion.div>
+    )}
+  </motion.button>
+)
+
+const NavButton = ({ 
+  icon, 
+  text, 
+  onClick,
+  isActive = false
+}: { 
+  icon: React.ReactNode
+  text: string
+  onClick: () => void
+  isActive?: boolean
+}) => (
+  <motion.button
+    whileHover={{ scale: 1.02 }}
+    whileTap={{ scale: 0.98 }}
+    onClick={onClick}
+    className={`flex items-center px-4 py-2 rounded-lg transition-all duration-200 ${
+      isActive 
+        ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/25' 
+        : 'text-gray-600 hover:bg-blue-50 hover:text-blue-600'
+    }`}
+  >
+    <span className={isActive ? 'text-white' : 'text-blue-500'}>
+      {icon}
+    </span>
+    <span className={`ml-2 font-medium text-[15px] tracking-wide ${
+      isActive ? 'text-white' : ''
+    }`}>
+      {text}
+    </span>
   </motion.button>
 ) 
