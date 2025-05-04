@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import connectDB from './config/database';
 import authRoutes from './routes/auth';
 import productRoutes from './routes/products';
+import searchRoutes from './routes/search';
 
 // Load environment variables
 dotenv.config();
@@ -22,6 +23,7 @@ connectDB();
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/search', searchRoutes);
 
 // Basic route
 app.get('/', (req, res) => {
